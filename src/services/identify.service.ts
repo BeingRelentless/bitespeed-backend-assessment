@@ -8,7 +8,7 @@ export const identifyContact = async (
     throw new Error("Either email or phoneNumber required");
   }
 
-  // 1️⃣ Find all contacts matching email OR phone
+  // Find all contacts matching email OR phone
   const matched = await prisma.contact.findMany({
     where: {
       OR: [
@@ -18,7 +18,7 @@ export const identifyContact = async (
     },
   });
 
-  // 2️⃣ If no match → create primary
+  // If no match → create primary
   if (matched.length === 0) {
     const newContact = await prisma.contact.create({
       data: {
@@ -36,7 +36,7 @@ export const identifyContact = async (
     };
   }
 
-  // 3️⃣ Get all related contacts (including linked ones)
+  // Get all related contacts (including linked ones)
   const relatedIds = new Set<number>();
 
   for (const contact of matched) {
@@ -56,7 +56,7 @@ export const identifyContact = async (
     },
   });
 
-  // 4️⃣ Determine oldest primary
+  // Determine oldest primary
   const primaries = relatedContacts.filter(
     (c) => c.linkPrecedence === "primary"
   );
@@ -67,7 +67,7 @@ export const identifyContact = async (
 
   const primary = primaries[0];
 
-  // 5️⃣ Merge multiple primaries if needed
+  // Merge multiple primaries if needed
   for (let i = 1; i < primaries.length; i++) {
     await prisma.contact.update({
       where: { id: primaries[i].id },
@@ -78,7 +78,7 @@ export const identifyContact = async (
     });
   }
 
-  // 6️⃣ Check if new info exists
+  // Checking if new info exists
   const allEmails = relatedContacts.map((c) => c.email);
   const allPhones = relatedContacts.map((c) => c.phoneNumber);
 
@@ -99,7 +99,7 @@ export const identifyContact = async (
     });
   }
 
-  // 7️⃣ Fetch final consolidated contacts
+  // Fetch final consolidated contacts
   const finalContacts = await prisma.contact.findMany({
     where: {
       OR: [
