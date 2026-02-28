@@ -16,7 +16,7 @@ POST https://bitespeed-backend-assessment-04gf.onrender.com/identify
 
 ---
 
-## 🛠 Tech Stack
+##  Tech Stack
 
 - Node.js
 - Express.js
